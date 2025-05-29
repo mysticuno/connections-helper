@@ -56,9 +56,6 @@ observer.observe(document.body, {
   subtree: true
 });
 
-// Initialize immediately if content is already loaded
-initialize();
-
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'CLEAR_MARKS') {
     // Remove marks from storage first, then clean up DOM
@@ -101,11 +98,27 @@ function wrapTile(tile) {
     marker.className = 'candidate-corner';
     marker.dataset.color = color;
     
+    marker.addEventListener('mouseenter', () => {
+      if (!marker.classList.contains('active')) {
+        marker.style.opacity = '0.8';
+      }
+    });
+
+    marker.addEventListener('mouseleave', () => {
+      if (!marker.classList.contains('active')) {
+        marker.style.opacity = '0';
+      }
+    });
+
     // Only use pointerdown event to prevent click propagation
     marker.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (candidateMode) {
+        // If the tile is invisible, make it visible before toggling
+        if (marker.style.opacity === '0') {
+          marker.style.opacity = '0.8';
+        }
         toggleMark(tile, color);
       }
     }, { capture: true });
@@ -152,6 +165,10 @@ function toggleMark(tile, color) {
     } else {
       marks[word].splice(idx, 1);
       removeCorner(tile, color);
+      const corner = tile.querySelector(`.candidate-corner[data-color="${color}"]`);
+      if (corner) {
+        corner.style.opacity = '0';
+      }
     }
     
     chrome.storage.local.set({ tileMarks: marks });

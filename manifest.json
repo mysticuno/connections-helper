@@ -5,7 +5,13 @@
   "description": "Mark potential categories in NYT Connections tiles.",
   "permissions": ["storage", "activeTab", "scripting"],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "128": "icon-128.png"
+    }
+  },
+  "icons": {
+    "128": "icon-128.png"
   },
   "content_scripts": [
     {
