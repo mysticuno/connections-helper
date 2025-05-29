@@ -1,22 +1,16 @@
 const COLORS = ['yellow', 'green', 'blue', 'purple'];
 let candidateMode = true;
-let isInitialized = false;
 
-// Initialize on page load and when DOM changes
 function initialize() {
-  if (isInitialized) {
-    return;
-  }
-  
   const tiles = document.querySelectorAll('[data-testid="card-label"]');
   
   if (tiles.length === 0) {
     return;
   }
   
-  isInitialized = true;
   chrome.storage.local.get(['candidateMode', 'tileMarks'], (data) => {
     candidateMode = data.candidateMode !== undefined ? data.candidateMode : true;
+
     if (candidateMode) {
       const marks = data.tileMarks || {};
       tiles.forEach(tile => {
@@ -52,7 +46,7 @@ chrome.runtime.onMessage.addListener((msg) => {
   } else if (msg.type === 'TOGGLE_MODE') {
     candidateMode = msg.enabled;
     if (!candidateMode) {
-      document.querySelectorAll('.candidate-corner').forEach(e => e.remove());
+      document.querySelectorAll('.corner-container').forEach(e => e.remove());
     } else {
       initialize();
     }
@@ -130,7 +124,7 @@ chrome.storage.onChanged.addListener((changes) => {
     if (candidateMode) {
       initialize();
     } else {
-      document.querySelectorAll('.candidate-corner').forEach(e => e.remove());
+      document.querySelectorAll('.corner-container').forEach(e => e.remove());
     }
   }
 });
