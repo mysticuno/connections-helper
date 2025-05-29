@@ -2,16 +2,16 @@
   "manifest_version": 3,
   "name": "NYT Connections Helper",
   "version": "1.0",
-  "description": "Add visual candidate markings to Connections game.",
+  "description": "Mark potential categories in NYT Connections tiles.",
   "permissions": ["storage", "activeTab", "scripting"],
+  "action": {
+    "default_popup": "popup.html"
+  },
   "content_scripts": [
     {
-      "matches": ["*://www.nytimes.com/games/connections*"],
-      "js": ["content.js"]
+      "matches": ["https://www.nytimes.com/games/connections*"],
+      "js": ["content.js"],
+      "css": ["style.css"]
     }
-  ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": "icon.png"
-  }
+  ]
 }
