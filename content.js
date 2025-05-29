@@ -10,12 +10,17 @@ function initialize() {
   
   chrome.storage.local.get(['candidateMode', 'tileMarks'], (data) => {
     candidateMode = data.candidateMode !== undefined ? data.candidateMode : true;
-
+    
+    // Only wrap tiles and restore marks if candidate mode is on
     if (candidateMode) {
       const marks = data.tileMarks || {};
       tiles.forEach(tile => {
+        const word = tile.textContent.trim();
+        if (!word) {
+          return;
+        }
+        
         wrapTile(tile);
-        const word = tile.innerText.trim();
         if (marks[word]) {
           marks[word].forEach(color => addCorner(tile, color));
         }
@@ -25,9 +30,24 @@ function initialize() {
 }
 
 // Watch for DOM changes to handle dynamic content
-const observer = new MutationObserver(() => {
-  if (document.querySelectorAll('[data-testid="card-label"]').length > 0) {
-    initialize();
+const observer = new MutationObserver((mutations) => {
+  // Ignore changes to our corner containers to prevent infinite loops
+  const isOurChange = mutations.some(mutation => 
+    mutation.target.classList.contains('corner-container') ||
+    mutation.target.classList.contains('candidate-corner')
+  );
+  
+  if (isOurChange) {
+    return;
+  }
+  
+  // Check if the game board has been loaded
+  const gameBoard = document.querySelector('[data-testid="connections-board"]');
+  if (gameBoard) {
+    const tiles = document.querySelectorAll('[data-testid="card-label"]');
+    if (tiles.length > 0) {
+      initialize();
+    }
   }
 });
 
@@ -41,8 +61,11 @@ initialize();
 
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'CLEAR_MARKS') {
-    document.querySelectorAll('.candidate-corner').forEach(e => e.remove());
-    chrome.storage.local.remove('tileMarks');
+    // Remove marks from storage first, then clean up DOM
+    chrome.storage.local.remove('tileMarks', () => {
+      document.querySelectorAll('.corner-container').forEach(e => e.remove());
+      initialize();
+    });
   } else if (msg.type === 'TOGGLE_MODE') {
     candidateMode = msg.enabled;
     if (!candidateMode) {
@@ -54,7 +77,17 @@ chrome.runtime.onMessage.addListener((msg) => {
 });
 
 function wrapTile(tile) {
-  if (tile.querySelector('.candidate-corner')) {
+  const word = tile.textContent.trim();
+  
+  // Check if tile is already wrapped to prevent infinite loop
+  if (tile.querySelector('.corner-container')) {
+    // Still check and apply any existing marks
+    chrome.storage.local.get('tileMarks', (data) => {
+      const marks = data.tileMarks || {};
+      if (marks[word]) {
+        marks[word].forEach(color => addCorner(tile, color));
+      }
+    });
     return;
   }
   
@@ -68,7 +101,7 @@ function wrapTile(tile) {
     marker.className = 'candidate-corner';
     marker.dataset.color = color;
     
-    // Only use pointerdown event
+    // Only use pointerdown event to prevent click propagation
     marker.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -81,6 +114,14 @@ function wrapTile(tile) {
   });
   
   tile.appendChild(cornerContainer);
+  
+  // Check and apply any existing marks
+  chrome.storage.local.get('tileMarks', (data) => {
+    const marks = data.tileMarks || {};
+    if (marks[word]) {
+      marks[word].forEach(color => addCorner(tile, color));
+    }
+  });
 }
 
 function addCorner(tile, color) {
@@ -98,7 +139,7 @@ function removeCorner(tile, color) {
 }
 
 function toggleMark(tile, color) {
-  const word = tile.innerText.trim();
+  const word = tile.textContent.trim();
   
   chrome.storage.local.get('tileMarks', (data) => {
     const marks = data.tileMarks || {};
