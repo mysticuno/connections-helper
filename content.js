@@ -8,25 +8,26 @@ function initialize() {
     return;
   }
   
-  chrome.storage.local.get(['candidateMode', 'tileMarks'], (data) => {
-    candidateMode = data.candidateMode !== undefined ? data.candidateMode : true;
-    
-    // Only wrap tiles and restore marks if candidate mode is on
-    if (candidateMode) {
-      const marks = data.tileMarks || {};
-      tiles.forEach(tile => {
-        const word = tile.textContent.trim();
-        if (!word) {
-          return;
-        }
-        
-        wrapTile(tile);
-        if (marks[word]) {
-          marks[word].forEach(color => addCorner(tile, color));
-        }
-      });
-    }
-  });
+  // Get candidateMode and tileMarks from localStorage
+  candidateMode = window.localStorage.getItem('candidateMode') !== null
+    ? window.localStorage.getItem('candidateMode') === 'true'
+    : true;
+  const marks = JSON.parse(window.localStorage.getItem('tileMarks') || '{}');
+  
+  // Only wrap tiles and restore marks if candidate mode is on
+  if (candidateMode) {
+    tiles.forEach(tile => {
+      const word = tile.textContent.trim();
+      if (!word) {
+        return;
+      }
+      
+      wrapTile(tile);
+      if (marks[word]) {
+        marks[word].forEach(color => addCorner(tile, color));
+      }
+    });
+  }
 }
 
 // Watch for DOM changes to handle dynamic content
@@ -59,12 +60,12 @@ observer.observe(document.body, {
 chrome.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'CLEAR_MARKS') {
     // Remove marks from storage first, then clean up DOM
-    chrome.storage.local.remove('tileMarks', () => {
-      document.querySelectorAll('.corner-container').forEach(e => e.remove());
-      initialize();
-    });
+    window.localStorage.removeItem('tileMarks');
+    document.querySelectorAll('.corner-container').forEach(e => e.remove());
+    initialize();
   } else if (msg.type === 'TOGGLE_MODE') {
     candidateMode = msg.enabled;
+    window.localStorage.setItem('candidateMode', candidateMode);
     if (!candidateMode) {
       document.querySelectorAll('.corner-container').forEach(e => e.remove());
     } else {
@@ -79,12 +80,10 @@ function wrapTile(tile) {
   // Check if tile is already wrapped to prevent infinite loop
   if (tile.querySelector('.corner-container')) {
     // Still check and apply any existing marks
-    chrome.storage.local.get('tileMarks', (data) => {
-      const marks = data.tileMarks || {};
-      if (marks[word]) {
-        marks[word].forEach(color => addCorner(tile, color));
-      }
-    });
+    const marks = JSON.parse(window.localStorage.getItem('tileMarks') || '{}');
+    if (marks[word]) {
+      marks[word].forEach(color => addCorner(tile, color));
+    }
     return;
   }
   
@@ -129,12 +128,10 @@ function wrapTile(tile) {
   tile.appendChild(cornerContainer);
   
   // Check and apply any existing marks
-  chrome.storage.local.get('tileMarks', (data) => {
-    const marks = data.tileMarks || {};
-    if (marks[word]) {
-      marks[word].forEach(color => addCorner(tile, color));
-    }
-  });
+  const marks = JSON.parse(window.localStorage.getItem('tileMarks') || '{}');
+  if (marks[word]) {
+    marks[word].forEach(color => addCorner(tile, color));
+  }
 }
 
 function addCorner(tile, color) {
@@ -154,35 +151,21 @@ function removeCorner(tile, color) {
 function toggleMark(tile, color) {
   const word = tile.textContent.trim();
   
-  chrome.storage.local.get('tileMarks', (data) => {
-    const marks = data.tileMarks || {};
-    marks[word] = marks[word] || [];
-    const idx = marks[word].indexOf(color);
-    
-    if (idx === -1) {
-      marks[word].push(color);
-      addCorner(tile, color);
-    } else {
-      marks[word].splice(idx, 1);
-      removeCorner(tile, color);
-      const corner = tile.querySelector(`.candidate-corner[data-color="${color}"]`);
-      if (corner) {
-        corner.style.opacity = '0';
-      }
-    }
-    
-    chrome.storage.local.set({ tileMarks: marks });
-  });
-}
-
-// Listen for changes to candidate mode toggle
-chrome.storage.onChanged.addListener((changes) => {
-  if (changes.candidateMode) {
-    candidateMode = changes.candidateMode.newValue;
-    if (candidateMode) {
-      initialize();
-    } else {
-      document.querySelectorAll('.corner-container').forEach(e => e.remove());
+  const marks = JSON.parse(window.localStorage.getItem('tileMarks') || '{}');
+  marks[word] = marks[word] || [];
+  const idx = marks[word].indexOf(color);
+  
+  if (idx === -1) {
+    marks[word].push(color);
+    addCorner(tile, color);
+  } else {
+    marks[word].splice(idx, 1);
+    removeCorner(tile, color);
+    const corner = tile.querySelector(`.candidate-corner[data-color="${color}"]`);
+    if (corner) {
+      corner.style.opacity = '0';
     }
   }
-});
+  
+  window.localStorage.setItem('tileMarks', JSON.stringify(marks));
+}

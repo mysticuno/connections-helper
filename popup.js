@@ -21,15 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Initialize toggle state
-    chrome.storage.local.get('candidateMode', (data) => {
-      candidateModeToggle.checked = data.candidateMode !== undefined ? data.candidateMode : true;
-      updateClearButtonVisibility();
-    });
+    // Initialize toggle state from localStorage
+    candidateModeToggle.checked = window.localStorage.getItem('candidateMode') !== null
+      ? window.localStorage.getItem('candidateMode')
+      : true;
+    updateClearButtonVisibility();
 
     // Toggle candidate mode
     candidateModeToggle.addEventListener('change', () => {
-      chrome.storage.local.set({candidateMode: candidateModeToggle.checked});
+      window.localStorage.setItem('candidateMode', candidateModeToggle.checked);
       updateClearButtonVisibility();
       chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, {

@@ -3,7 +3,7 @@
   "name": "NYT Connections Helper",
   "version": "1.0",
   "description": "Mark potential categories in NYT Connections tiles.",
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
