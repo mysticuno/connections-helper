@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Connections Helper</title>
         <link rel="stylesheet" href="popup.css">
     </head>
     <body>
         <div class="container">
-            <div class="toggle-container">
-                <span>Candidate Mode</span>
-                <label class="switch">
-                    <input type="checkbox" id="candidateModeToggle" checked>
-                    <span class="slider"></span>
-                </label>
+            <div id="playConnections" class="hidden">
+                <a href="https://www.nytimes.com/games/connections" target="_blank" class="play-button">Play today's Connections</a>
             </div>
-            <button id="clearMarks">Clear All Marks</button>
+            <div id="mainContent">
+                <div class="toggle-container">
+                    <span>Enable extension</span>
+                    <label class="switch">
+                        <input type="checkbox" id="candidateModeToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button id="clearMarks">Clear All Marks</button>
+            </div>
         </div>
         <script src="popup.js"></script>
     </body>
