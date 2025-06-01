@@ -1,3 +1,5 @@
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 const COLORS = ['yellow', 'green', 'blue', 'purple'];
 let candidateMode = true;
 
@@ -57,7 +59,7 @@ observer.observe(document.body, {
   subtree: true
 });
 
-chrome.runtime.onMessage.addListener((msg) => {
+browserAPI.runtime.onMessage.addListener((msg) => {
   if (msg.type === 'CLEAR_MARKS') {
     // Remove marks from storage first, then clean up DOM
     window.localStorage.removeItem('tileMarks');

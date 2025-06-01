@@ -1,3 +1,5 @@
+const browserAPI = typeof browser !== "undefined" ? browser : chrome;
+
 document.addEventListener('DOMContentLoaded', () => {
   const candidateModeToggle = document.getElementById('candidateModeToggle');
   const clearMarksButton = document.getElementById('clearMarks');
@@ -13,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Check if we're on the Connections page
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+  browserAPI.tabs.query({active: true, currentWindow: true}, (tabs) => {
     const currentUrl = tabs[0].url;
     if (!currentUrl.includes('nytimes.com/games/connections')) {
       playConnections.classList.remove('hidden');
@@ -31,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     candidateModeToggle.addEventListener('change', () => {
       window.localStorage.setItem('candidateMode', candidateModeToggle.checked);
       updateClearButtonVisibility();
-      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, {
+      browserAPI.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        browserAPI.tabs.sendMessage(tabs[0].id, {
           type: 'TOGGLE_MODE',
           enabled: candidateModeToggle.checked
         });
@@ -41,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear marks
     clearMarksButton.addEventListener('click', () => {
-      chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, {type: 'CLEAR_MARKS'});
+      browserAPI.tabs.query({active: true, currentWindow: true}, (tabs) => {
+        browserAPI.tabs.sendMessage(tabs[0].id, {type: 'CLEAR_MARKS'});
       });
     });
   });
