@@ -23,9 +23,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Initialize toggle state from localStorage
+    // Initialize toggle state from localStorage, which can only be stored as a string
     candidateModeToggle.checked = window.localStorage.getItem('candidateMode') !== null
-      ? window.localStorage.getItem('candidateMode')
+      ? window.localStorage.getItem('candidateMode') === 'true'
       : true;
     updateClearButtonVisibility();
 
