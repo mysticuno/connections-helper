@@ -1,11 +1,12 @@
 {
   "name": "connections-helper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "build": "npm run build:chrome && npm run build:firefox",
     "build:chrome": "node build.js chrome",
     "build:firefox": "node build.js firefox",
-    "start": "npm run build",
+    "start": "npm run setup",
+    "setup": "npm install && npm run clean && npm run build",
     "clean": "rm -rf dist && rm -f connections-helper-*.zip"
   },
   "engines": {

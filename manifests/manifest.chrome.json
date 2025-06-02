@@ -1,9 +1,12 @@
 {
   "name": "Connections Helper",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
   "description": "An extension to mark categories in NYT Connections tiles.",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -15,9 +18,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://www.nytimes.com/games/connections*"],
-      "js": ["content.js"],
-      "css": ["style.css"]
+      "matches": [
+        "https://www.nytimes.com/games/connections*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "style.css"
+      ]
     }
   ]
 }

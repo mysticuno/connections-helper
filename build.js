@@ -8,6 +8,10 @@ const srcDir = path.join(__dirname, 'src');
 const distDir = path.join(__dirname, 'dist');
 const imagesDir = path.join(__dirname, 'images');
 
+// Read version from package.json
+const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+const version = packageJson.version;
+
 // Function to create the zip archive
 const createZipArchive = (sourceDir, outputZip) => {
   return new Promise((resolve, reject) => {
@@ -35,14 +39,21 @@ async function buildExtension(browser) {
   const browserDistDir = path.join(distDir, browser);
   const manifestFile = path.join(__dirname, 'manifests', `manifest.${browser}.json`);
 
+  // Read and update manifest with version from package.json
+  const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
+  manifest.version = version;
+
+  // Update the source manifest file with the new version
+  fs.writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+
   // Ensure the dist directory exists
   fs.mkdirSync(browserDistDir, { recursive: true });
 
-  // Copy source code, images, and appropriate manifest concurrently
+  // Copy source code, images, and write updated manifest concurrently
   await Promise.all([
     fs.promises.cp(srcDir, browserDistDir, { recursive: true }),
     fs.promises.cp(imagesDir, path.join(browserDistDir, 'images'), { recursive: true }),
-    fs.promises.copyFile(manifestFile, path.join(browserDistDir, 'manifest.json'))
+    fs.promises.writeFile(path.join(browserDistDir, 'manifest.json'), JSON.stringify(manifest, null, 2))
   ]);
 
   // Create the zip archive for the extension
