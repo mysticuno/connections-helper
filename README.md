@@ -3,7 +3,7 @@
   <img src="./logo.png" alt="Connections Helper logo">
 </p>
 
-An extension to help you keep track of the color categories in [Connections](https://www.nytimes.com/games/connections). Download the **[Chrome extension here]()** or the **[Firefox add-on here]()**.
+An extension to help you keep track of the color categories in [Connections](https://www.nytimes.com/games/connections). Download the **[Chrome extension here](https://chromewebstore.google.com/detail/wordle-helper/bpfjeiapklolnoijiopkeemgjckpfipj/)** or the **[Firefox add-on here](https://addons.mozilla.org/en-US/firefox/addon/connections-helper/)**.
 
 ## Demo
 <p align="center">
@@ -11,7 +11,7 @@ An extension to help you keep track of the color categories in [Connections](htt
 </p>
 
 ## Setup
-You can download the **[Chrome extension here](https://chromewebstore.google.com/detail/wordle-helper/bpfjeiapklolnoijiopkeemgjckpfipj)** or the **[Firefox add-on here](https://addons.mozilla.org/en-US/firefox/addon/connections-helper)**.
+You can download the **[Chrome extension here](https://chromewebstore.google.com/detail/wordle-helper/bpfjeiapklolnoijiopkeemgjckpfipj/)** or the **[Firefox add-on here](https://addons.mozilla.org/en-US/firefox/addon/connections-helper/)**.
 
 You can also clone the repo and load it as an **[unpacked extension](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world#load-unpacked)** in Chrome or as a **[temporary add-on](https://extensionworkshop.com/documentation/develop/temporary-installation-in-firefox/)** in Firefox. Please leave a review ([Chrome](https://chromewebstore.google.com/detail/wordle-helper/bpfjeiapklolnoijiopkeemgjckpfipj/reviews), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/connections-helper/reviews)) if you enjoy the extension!
 
